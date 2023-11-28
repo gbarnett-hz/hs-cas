@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Client Conneciton Preference; Slow Member</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="pandoc/panam.css" />
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Client Conneciton Preference; Slow Member</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#setup" id="toc-setup">Setup</a></li>
+<li><a href="#operation" id="toc-operation">Operation</a></li>
+<li><a href="#leadership" id="toc-leadership">Leadership</a></li>
+<li><a href="#scenarios" id="toc-scenarios">Scenarios</a></li>
+</ul>
+</nav>
+<h1 id="setup">Setup</h1>
+<ul>
+<li>5 CP Member Group</li>
+<li>Each CP member is hosted on distinct c5.4xlarge</li>
+<li>Client hosted on distinct c5.4xlarge</li>
+<li>Each JVM Xms and Xmx 8G; Java 17, rest are defaults</li>
+<li>Hazelcast 5.3.7-SNAPSHOT (latest of 5.3.z + Vassilis client
+filter)</li>
+<li>All VMs in <code>cluster</code> placement group</li>
+<li>At most we put a 10ms network latency on one member, i.e. the ‘slow’
+member</li>
+</ul>
+<h1 id="operation">Operation</h1>
+<p>An <em>op</em> as referred below is:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode java"><code class="sourceCode java"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span> observed <span class="op">=</span> atomicReference<span class="op">.</span><span class="fu">get</span><span class="op">();</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">String</span> newValue<span class="op">;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span> <span class="op">{</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    newValue <span class="op">=</span> observed<span class="op">;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">}</span> <span class="cf">while</span> <span class="op">(!</span>atomicReference<span class="op">.</span><span class="fu">compareAndSet</span><span class="op">(</span>observed<span class="op">,</span> newValue<span class="op">));</span></span></code></pre></div>
+<p>The <code>compareAndSet</code> always succeeds; the value of
+<code>atomicReference</code> never changes. The reason for this is so
+that you compute only the cost of the CP operations rather than any
+other auxiliary computation. Before the run begins there’s a 10k warmup
+cycle of that op; the test itself is 500k ops.</p>
+<h1 id="leadership">Leadership</h1>
+<p>One member is given leadership priority. Before any test is run we
+wait for the member with leadership priority to assume leadership of the
+<code>default</code> CP Group. Smart routing is disabled so we can
+target a specific member. When smart routing isn’t disabled we are
+showing semantics as-is today without taking this additional step,
+exception is use of revised load balancer logic.</p>
+<h1 id="scenarios">Scenarios</h1>
+<p><img src="topology.svg" /></p>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 4%" />
+<col style="width: 7%" />
+<col style="width: 3%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Scenario</th>
+<th>Network</th>
+<th>Duration(s)</th>
+<th>Op/s</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>client-leader</td>
+<td>(a)</td>
+<td>385</td>
+<td>~1299</td>
+<td>client talks directly with leader of CP group</td>
+</tr>
+<tr class="even">
+<td>client-follower</td>
+<td>(a)</td>
+<td>541</td>
+<td>~924</td>
+<td>client talks to follower of CP group</td>
+</tr>
+<tr class="odd">
+<td>client-leader-1follower10ms</td>
+<td>(b)</td>
+<td>390</td>
+<td>~1282</td>
+<td>client talks directly with leader of CP group; one follower has a
+10ms network latency</td>
+</tr>
+<tr class="even">
+<td>client-follower-1follower10ms</td>
+<td>(b)</td>
+<td>545</td>
+<td>~917</td>
+<td>client talks to a single follower; one follower has a 10ms network
+latency</td>
+</tr>
+<tr class="odd">
+<td>client-follower10ms-1follower10ms</td>
+<td>(b)</td>
+<td>&gt; 1000</td>
+<td>&gt;~500</td>
+<td>client talks to a single follower; that follower has a 10ms network
+latency</td>
+</tr>
+</tbody>
+</table>
+<p>For <em>client-follower10ms-1follower10ms</em> the op/s is the very
+minimum: it could be much more. The test failed to complete.</p>
+</body>
+</html>
