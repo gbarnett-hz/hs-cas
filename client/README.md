@@ -47,6 +47,12 @@ without taking this additional step, exception is use of revised load balancer l
 | client-leader-1follower10ms       | (b)     | 390         | ~1282 | client talks directly with leader of CP group; one follower has a 10ms network latency |
 | client-follower-1follower10ms     | (b)     | 545         | ~917  | client talks to a single follower; one follower has a 10ms network latency             |
 | client-follower10ms-1follower10ms | (b)     | > 1000      | >~500 | client talks to a single follower; that follower has a 10ms network latency            |
+| client-lb                         | (a)     | 478         | ~1046 | client lb with all members whitelisted; should be same default RR                      |
+| client-lb-10ms                    | (b)     | 456         | ~1096 | client lb with all members whitelisted but the member with 10ms network latency        |
 
 For _client-follower10ms-1follower10ms_ the op/s is the very minimum: it could be much more. The
 test failed to complete.
+
+The client-lb scenario is faster than client-follower because 1/5 requests (I assume) go to the
+leader which is fastest; by contrast to client-follower which never utilises the leader.
+client-lb-10ms is faster than client-lb because now 1/4 requests go to leader.

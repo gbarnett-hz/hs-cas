@@ -193,9 +193,29 @@ latency</td>
 <td>client talks to a single follower; that follower has a 10ms network
 latency</td>
 </tr>
+<tr class="even">
+<td>client-lb</td>
+<td>(a)</td>
+<td>478</td>
+<td>~1046</td>
+<td>client lb with all members whitelisted; should be same default
+RR</td>
+</tr>
+<tr class="odd">
+<td>client-lb-10ms</td>
+<td>(b)</td>
+<td>456</td>
+<td>~1096</td>
+<td>client lb with all members whitelisted but the member with 10ms
+network latency</td>
+</tr>
 </tbody>
 </table>
 <p>For <em>client-follower10ms-1follower10ms</em> the op/s is the very
 minimum: it could be much more. The test failed to complete.</p>
+<p>The client-lb scenario is faster than client-follower because 1/5
+requests (I assume) go to the leader which is fastest; by contrast to
+client-follower which never utilises the leader. client-lb-10ms is
+faster than client-lb because now 1/4 requests go to leader.</p>
 </body>
 </html>
