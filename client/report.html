@@ -100,7 +100,10 @@
 <li><a href="#setup" id="toc-setup">Setup</a></li>
 <li><a href="#operation" id="toc-operation">Operation</a></li>
 <li><a href="#leadership" id="toc-leadership">Leadership</a></li>
-<li><a href="#scenarios" id="toc-scenarios">Scenarios</a></li>
+<li><a href="#scenarios" id="toc-scenarios">Scenarios</a>
+<ul>
+<li><a href="#observations" id="toc-observations">Observations</a></li>
+</ul></li>
 </ul>
 </nav>
 <h1 id="setup">Setup</h1>
@@ -139,11 +142,11 @@ exception is use of revised load balancer logic.</p>
 <p><img src="topology.svg" /></p>
 <table>
 <colgroup>
-<col style="width: 23%" />
+<col style="width: 22%" />
 <col style="width: 4%" />
 <col style="width: 7%" />
-<col style="width: 3%" />
-<col style="width: 60%" />
+<col style="width: 7%" />
+<col style="width: 58%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -188,8 +191,8 @@ latency</td>
 <tr class="odd">
 <td>client-follower10ms-1follower10ms</td>
 <td>(b)</td>
-<td>&gt; 1000</td>
-<td>&gt;~500</td>
+<td>FAIL</td>
+<td>FAIL</td>
 <td>client talks to a single follower; that follower has a 10ms network
 latency</td>
 </tr>
@@ -209,13 +212,26 @@ RR</td>
 <td>client lb with all members whitelisted but the member with 10ms
 network latency</td>
 </tr>
+<tr class="even">
+<td>client-smart-10ms</td>
+<td>(b)</td>
+<td>in-progress</td>
+<td>in-progress</td>
+<td>client using smart routing</td>
+</tr>
 </tbody>
 </table>
-<p>For <em>client-follower10ms-1follower10ms</em> the op/s is the very
-minimum: it could be much more. The test failed to complete.</p>
-<p>The client-lb scenario is faster than client-follower because 1/5
-requests (I assume) go to the leader which is fastest; by contrast to
-client-follower which never utilises the leader. client-lb-10ms is
-faster than client-lb because now 1/4 requests go to leader.</p>
+<h2 id="observations">Observations</h2>
+<ul>
+<li><em>client-follower10ms-1follower10ms</em> this is the worse case
+scenario, it took around an hour and then the client gave up.</li>
+<li><em>client-follower10ms-1follower10ms</em> the op/s is the very
+minimum: it could be much more. The test failed to complete.</li>
+<li>The <em>client-lb</em> scenario is faster than
+<em>client-follower</em> because 1/5 requests (I assume) go to the
+leader which is fastest; by contrast to <em>client-follower</em> which
+never utilises the leader. <em>client-lb-10ms</em> is faster than
+<em>client-lb</em> because now 1/4 requests go to leader.</li>
+</ul>
 </body>
 </html>
