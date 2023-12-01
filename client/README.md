@@ -55,8 +55,6 @@ without taking this additional step, exception is use of revised load balancer l
 
 - _client-follower10ms-1follower10ms_ this is the worse case scenario, it took around an hour and
   then the client gave up.
-- _client-follower10ms-1follower10ms_ the op/s is the very minimum: it could be much more. The test
-  failed to complete.
 - The _client-lb_ scenario is faster than _client-follower_ because 1/5 requests (I assume) go to
   the leader which is fastest; by contrast to _client-follower_ which never utilises the leader.
   _client-lb-10ms_ is faster than _client-lb_ because now 1/4 requests go to leader.
