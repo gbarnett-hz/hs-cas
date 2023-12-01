@@ -40,16 +40,16 @@ without taking this additional step, exception is use of revised load balancer l
 
 ![](topology.svg)
 
-| Scenario                          | Network | Duration(s) | Op/s        | Description                                                                            |
-| --------------------------------- | ------- | ----------- | ----------- | -------------------------------------------------------------------------------------- |
-| client-leader                     | (a)     | 385         | ~1299       | client talks directly with leader of CP group                                          |
-| client-follower                   | (a)     | 541         | ~924        | client talks to follower of CP group                                                   |
-| client-leader-1follower10ms       | (b)     | 390         | ~1282       | client talks directly with leader of CP group; one follower has a 10ms network latency |
-| client-follower-1follower10ms     | (b)     | 545         | ~917        | client talks to a single follower; one follower has a 10ms network latency             |
-| client-follower10ms-1follower10ms | (b)     | FAIL        | FAIL        | client talks to a single follower; that follower has a 10ms network latency            |
-| client-lb                         | (a)     | 478         | ~1046       | client lb with all members whitelisted; should be same default RR                      |
-| client-lb-10ms                    | (b)     | 456         | ~1096       | client lb with all members whitelisted but the member with 10ms network latency        |
-| client-smart-10ms                 | (b)     | in-progress | in-progress | client using smart routing                                                             |
+| Scenario                          | Network | Duration(s) | Op/s  | Description                                                                            |
+| --------------------------------- | ------- | ----------- | ----- | -------------------------------------------------------------------------------------- |
+| client-leader                     | (a)     | 385         | ~1299 | client talks directly with leader of CP group                                          |
+| client-follower                   | (a)     | 541         | ~924  | client talks to follower of CP group                                                   |
+| client-leader-1follower10ms       | (b)     | 390         | ~1282 | client talks directly with leader of CP group; one follower has a 10ms network latency |
+| client-follower-1follower10ms     | (b)     | 545         | ~917  | client talks to a single follower; one follower has a 10ms network latency             |
+| client-follower10ms-1follower10ms | (b)     | FAIL        | FAIL  | client talks to a single follower; that follower has a 10ms network latency            |
+| client-lb                         | (a)     | 478         | ~1046 | client lb with all members whitelisted; should be same default RR                      |
+| client-lb-10ms                    | (b)     | 456         | ~1096 | client lb with all members whitelisted but the member with 10ms network latency        |
+| client-smart-10ms                 | (b)     | 4511        | ~111  | client using smart routing                                                             |
 
 ## Observations
 
@@ -58,3 +58,5 @@ without taking this additional step, exception is use of revised load balancer l
 - The _client-lb_ scenario is faster than _client-follower_ because 1/5 requests (I assume) go to
   the leader which is fastest; by contrast to _client-follower_ which never utilises the leader.
   _client-lb-10ms_ is faster than _client-lb_ because now 1/4 requests go to leader.
+- _client-smart-10ms_ is very slow but the performance is stable, ~6000 op/minute (I had to emit
+  this to see what was happening as it was so slow).

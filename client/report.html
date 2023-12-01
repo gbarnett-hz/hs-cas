@@ -142,11 +142,11 @@ exception is use of revised load balancer logic.</p>
 <p><img src="topology.svg" /></p>
 <table>
 <colgroup>
-<col style="width: 22%" />
+<col style="width: 23%" />
 <col style="width: 4%" />
 <col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 58%" />
+<col style="width: 3%" />
+<col style="width: 60%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -215,8 +215,8 @@ network latency</td>
 <tr class="even">
 <td>client-smart-10ms</td>
 <td>(b)</td>
-<td>in-progress</td>
-<td>in-progress</td>
+<td>4511</td>
+<td>~111</td>
 <td>client using smart routing</td>
 </tr>
 </tbody>
@@ -230,6 +230,9 @@ scenario, it took around an hour and then the client gave up.</li>
 leader which is fastest; by contrast to <em>client-follower</em> which
 never utilises the leader. <em>client-lb-10ms</em> is faster than
 <em>client-lb</em> because now 1/4 requests go to leader.</li>
+<li><em>client-smart-10ms</em> is very slow but the performance is
+stable, ~6000 op/minute (I had to emit this to see what was happening as
+it was so slow).</li>
 </ul>
 </body>
 </html>
